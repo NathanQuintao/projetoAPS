@@ -2,14 +2,39 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import DAO.DoencaDAO;
+import DAO.usuarioDAO;
+import conexao.Conexao;
 import entidades.Doenca;
 
 public class CadastroDoenca extends JFrame {
 
     private JTextField txtNome, txtCasos, txtMortes, txtPorcentagem;
     private JButton btnSalvar;
+
+    public boolean autenticar(String login, String senha) {
+    String sql = "SELECT * FROM usuarios WHERE login = ? AND senha = ?";
+
+    try (Connection conn = Conexao.getConexao();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, login);
+        stmt.setString(2, senha);
+
+        ResultSet rs = stmt.executeQuery();
+
+        return rs.next(); // Se encontrou, login está correto
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return false;
+    }
+}
 
     public CadastroDoenca() {
         setTitle("Cadastro de Doenças");
@@ -80,9 +105,20 @@ public class CadastroDoenca extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new CadastroDoenca().setVisible(true);
+   public static void main(String[] args) {
+    String login = JOptionPane.showInputDialog("Digite o login:");
+    String senha = JOptionPane.showInputDialog("Digite a senha:");
+
+    usuarioDAO usuarioDAO = new usuarioDAO(); // ou UsuarioDAO, dependendo do nome
+    boolean autenticado = usuarioDAO.autenticar(login, senha);
+
+    if (autenticado) {
+        JOptionPane.showMessageDialog(null, "Login realizado com sucesso!");
+        new CadastroDoenca().setVisible(true); // abre a parte do sistema
+    } else {
+        JOptionPane.showMessageDialog(null, "Login ou senha incorretos.");
+        System.exit(0); // encerra o programa se login falhar
     }
-  
+}
 }
 

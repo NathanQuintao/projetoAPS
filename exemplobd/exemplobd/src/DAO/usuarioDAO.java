@@ -1,30 +1,29 @@
 package DAO;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import conexao.Conexao;
-import entidades.Usuario; 
 
 public class usuarioDAO {
+    public boolean autenticar(String login, String senha) {
+        String sql = "SELECT * FROM login WHERE login = ? AND senha = ?";
 
-    public void cadastrarUsuario(Usuario usuario) { 
+        try (Connection conn = Conexao.getConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        String sql = "INSERT INTO USUARIO (NOME, LOGIN, SENHA) VALUES (?, ?, ?)";
+            stmt.setString(1, login);
+            stmt.setString(2, senha);
 
-        PreparedStatement ps = null;
-
-        try {
-            ps = Conexao.getConexao().prepareStatement(sql);
-            ps.setString(1, usuario.getNome());
-            ps.setString(2, usuario.getLogin());
-            ps.setString(3, usuario.getSenha());
-
-            ps.execute();
-            ps.close();
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // true se encontrou usuário
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }
+

@@ -1,6 +1,8 @@
 package DAO;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import conexao.Conexao;
@@ -22,4 +24,26 @@ public class DoencaDAO {
             e.printStackTrace();
         }
     }
+    public Doenca buscarPorNome(String nome) throws Exception {
+    Doenca doenca = null;
+
+    String sql = "SELECT * FROM doenca WHERE nome = ?";
+    Connection conn = Conexao.conectar();
+    PreparedStatement stmt = conn.prepareStatement(sql);
+    stmt.setString(1, nome);
+    ResultSet rs = stmt.executeQuery();
+
+    if (rs.next()) {
+        doenca = new Doenca();
+        doenca.setNome(rs.getString("nome"));
+        doenca.setNumeroCasos(rs.getInt("casos"));
+        doenca.setNumeroMortes(rs.getInt("mortes"));
+        doenca.setPorcentagemPopulacao(rs.getDouble("porcentagem"));
+    }
+    rs.close();
+    stmt.close();
+    conn.close();
+
+    return doenca;
+}
 }

@@ -26,4 +26,8 @@ public class Conexao {
         }
 
     }
+
+    public static Connection conectar() {
+        throw new UnsupportedOperationException("Unimplemented method 'conectar'");
+    }
 }

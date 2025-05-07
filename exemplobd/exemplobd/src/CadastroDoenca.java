@@ -66,6 +66,8 @@ public class CadastroDoenca extends JFrame {
         btnSalvar = new JButton("Salvar");
         panel.add(btnSalvar);
 
+        JButton btnGrafico = new JButton("Gerar Gráfico");
+        panel.add(btnGrafico);  
         
         panel.add(new JLabel(""));
 
@@ -78,6 +80,14 @@ public class CadastroDoenca extends JFrame {
                 salvarDoenca();
             }
         });
+
+        btnGrafico.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gerarGrafico();
+            }
+});
+        ;
     }
 
     private void salvarDoenca() {
@@ -102,6 +112,21 @@ public class CadastroDoenca extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro: preencha os campos numéricos corretamente!", "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar doença: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void gerarGrafico() {
+        try {
+            String nome = txtNome.getText();
+            DoencaDAO dao = new DoencaDAO();
+            Doenca doenca = dao.buscarPorNome(nome);
+    
+            if (doenca != null) {
+                GraficoDoenca.gerar(doenca);
+            } else {
+                JOptionPane.showMessageDialog(this, "Doença não encontrada.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
 
